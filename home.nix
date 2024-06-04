@@ -6,7 +6,8 @@ in
 {
   # import my custom configuations
   imports = [
-#   ./tmux
+   ./tmux
+   ./bash
   ];
 
   home = {
