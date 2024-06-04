@@ -17,6 +17,7 @@ in
         # Add packages here, search at https://search.nixos.org/packages
         lazygit
         tmux
+        neovim
     ];
     
     stateVersion = "22.11";
