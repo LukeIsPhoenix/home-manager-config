@@ -8,6 +8,7 @@ in
   imports = [
    ./tmux
    ./bash
+   ./nvim
   ];
 
   home = {
@@ -17,10 +18,9 @@ in
         # Add packages here, search at https://search.nixos.org/packages
         lazygit
         tmux
-        neovim
     ];
     
-    stateVersion = "22.11";
+    stateVersion = "23.11";
   };
 
   # TODO: figure out what this was for 
