@@ -8,6 +8,7 @@ in
   imports = [
    ./tmux
    ./bash
+   ./neovim
   ];
 
   home = {
