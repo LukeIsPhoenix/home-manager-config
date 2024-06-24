@@ -18,6 +18,7 @@ in
         # Add packages here, search at https://search.nixos.org/packages
         lazygit
         tmux
+        gcc
     ];
     
     stateVersion = "23.11";
