@@ -18,6 +18,7 @@ in
         # Add packages here, search at https://search.nixos.org/packages
         lazygit
         tmux
+        tmuxPlugins.resurrect
         gcc
     ];
     

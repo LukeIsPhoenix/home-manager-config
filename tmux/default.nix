@@ -12,4 +12,9 @@ in
     enable = true;
     source = link ./tmux.conf;
   };
+
+  home.file.".config/tmux/plugins" = {
+    enable = true;
+    source = link ./plugins;
+  };
 }
