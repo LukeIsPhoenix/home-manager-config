@@ -20,6 +20,7 @@ in
         tmux
         tmuxPlugins.resurrect
         gcc
+        ripgrep
     ];
     
     stateVersion = "23.11";
