@@ -21,6 +21,7 @@ in
         tmuxPlugins.resurrect
         gcc
         ripgrep
+        dos2unix
     ];
     
     stateVersion = "23.11";
