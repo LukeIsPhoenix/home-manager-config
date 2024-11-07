@@ -22,9 +22,14 @@ in
         gcc
         ripgrep
         dos2unix
+        lua51Packages.lua
+        luarocks
+        cargo
+        unzip
+        fd
     ];
     
-    stateVersion = "23.11";
+    stateVersion = "24.05";
   };
 
   # TODO: figure out what this was for 

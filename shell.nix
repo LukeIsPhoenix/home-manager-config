@@ -6,8 +6,8 @@ let
     owner = "nix-community";
     repo = "home-manager";
     # 23.11 release
-    rev = "652fda4ca6dafeb090943422c34ae9145787af37";
-    hash = "sha256-cLbLPTL1CDmETVh4p0nQtvoF+FSEjsnJTFpTxhXywhQ=";
+    rev = "2f23fa308a7c067e52dfcc30a0758f47043ec176";
+    hash = "sha256-Vl+WVTJwutXkimwGprnEtXc/s/s8sMuXzqXaspIGlwM=";
   };
 
 
