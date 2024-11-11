@@ -1,4 +1,5 @@
 eval "$(zoxide init bash)"
+alias cd="z"
 export EDITOR="nvim"
 
 # get current branch in git repo
