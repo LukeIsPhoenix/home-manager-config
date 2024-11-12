@@ -40,6 +40,11 @@ return {
       current_line_blame = true,
     },
   },
+
+  {
+    "junegunn/limelight.vim",
+    lazy = false,
+  },
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
   -- 	opts = {
