@@ -31,6 +31,12 @@ dofile(vim.g.base46_cache .. "statusline")
 
 require "options"
 require "nvchad.autocmds"
+require("oil").setup({
+    cleanup_delay_ms = 1000,
+    view_options = {
+      show_hidden = true
+    }
+})
 
 vim.schedule(function()
   require "mappings"

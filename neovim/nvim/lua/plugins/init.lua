@@ -52,6 +52,10 @@ return {
     opts = {
       -- add any custom options here
     }
+  },
+
+  {
+    "stevearc/oil.nvim",
   }
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",

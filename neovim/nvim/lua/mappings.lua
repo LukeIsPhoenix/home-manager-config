@@ -15,5 +15,7 @@ map("n", "<leader>qs", function() require("persistence").load() end, { desc = "R
 map("n", "<leader>qS", function() require("persistence").select() end, { desc = "Select session" }) -- select a session to load
 map("n", "<leader>ql", function() require("persistence").load({ last = true }) end, { desc = "Restore last session" }) -- load the last session
 map("n", "<leader>qd", function() require("persistence").stop() end, { desc = "Stop Persistence" }) -- stop Persistence => session won't be saved on exit
+map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
+
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
