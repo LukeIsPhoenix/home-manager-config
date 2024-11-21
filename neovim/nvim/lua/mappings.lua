@@ -4,7 +4,6 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
-map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 map("n", "<leader>ll", ":Limelight!!<CR>", { desc = "Toggle Limelight" })
 map("n", "<A-j>", ":m .+1<CR>==") -- move line up(n)
