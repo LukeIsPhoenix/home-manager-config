@@ -10,12 +10,28 @@ let
   }) {};
 in
 {
-  home.packages = [
-    nixos-unstable.neovim
-  ];
-
-  home.file.".config/nvim" = { 
+  programs.neovim = {
     enable = true;
-    source = link ./nvim;
+    plugins = with pkgs.vimPlugins; [
+      conform-nvim
+      hardtime-nvim
+      limelight-vim
+      oil-nvim
+      gitsigns-nvim
+      telescope-nvim
+      telescope-fzf-native-nvim
+      vim-nix
+      vim-lsp
+      lazygit-nvim
+    ];
+  };
+
+  # home.packages = [
+  #   nixos-unstable.neovim
+  # ];
+
+  home.file.".config/nvim/init.lua" = {
+    enable = true;
+    source = link ./nvim.lua;
   };
 }
