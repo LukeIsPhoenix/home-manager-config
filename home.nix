@@ -16,6 +16,7 @@ in
     homeDirectory = "/home/${builtins.getEnv "USER"}";
     packages = with pkgs; [
         # Add packages here, search at https://search.nixos.org/packages
+        fzf
         lazygit
         tmux
         tmuxPlugins.resurrect
