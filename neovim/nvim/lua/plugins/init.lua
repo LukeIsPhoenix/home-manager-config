@@ -56,7 +56,17 @@ return {
 
   {
     "stevearc/oil.nvim",
-  }
+  },
+
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    opts = {
+      disable_mouse = false,
+      force_exit_insert_mode = true,
+      max_count = 4
+    }
+  },
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
   -- 	opts = {
