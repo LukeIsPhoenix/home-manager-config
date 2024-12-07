@@ -13,16 +13,21 @@ in
   programs.neovim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
-      conform-nvim
+      # conform-nvim
       hardtime-nvim
-      limelight-vim
-      oil-nvim
-      gitsigns-nvim
+      # limelight-vim
+      # oil-nvim
+      # gitsigns-nvim
       telescope-nvim
       telescope-fzf-native-nvim
       vim-nix
-      vim-lsp
-      lazygit-nvim
+      # vim-lsp
+      # lazygit-nvim
+      # leap-nvim
+      # toggleterm-nvim
+      # catppuccin-nvim
+      lualine-nvim
+      vim-tmux-navigator
     ];
   };
 
