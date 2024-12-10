@@ -84,12 +84,12 @@ local harpoon = require("harpoon")
 harpoon:setup()
 -- REQUIRED
 
-map("n", "<C-a>", function() harpoon:list():add() end)
+map("n", "<leader>ha", function() harpoon:list():add() end)
 
-map("n", "<C-u>", function() harpoon:list():select(1) end)
-map("n", "<C-i>", function() harpoon:list():select(2) end)
-map("n", "<C-o>", function() harpoon:list():select(3) end)
-map("n", "<C-p>", function() harpoon:list():select(4) end)
+map("n", "<leader>j", function() harpoon:list():select(1) end)
+map("n", "<leader>k", function() harpoon:list():select(2) end)
+map("n", "<leader>l", function() harpoon:list():select(3) end)
+map("n", "<leader>;", function() harpoon:list():select(4) end)
 
 -- Toggle previous & next buffers stored within Harpoon list
 map("n", "<M-u>", function() harpoon:list():prev() end)
@@ -113,7 +113,7 @@ local function toggle_telescope(harpoon_files)
     }):find()
 end
 
-map("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
+map("n", "<leader>hl", function() toggle_telescope(harpoon:list()) end,
     { desc = "Open harpoon window" })
 
 vim.cmd [[

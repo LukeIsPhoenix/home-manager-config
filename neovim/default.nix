@@ -27,7 +27,6 @@ in
       lazygit-nvim
       # leap-nvim
       toggleterm-nvim
-      doom-one-nvim
       catppuccin-nvim
       lualine-nvim
       vim-tmux-navigator
