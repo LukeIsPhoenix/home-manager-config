@@ -49,16 +49,7 @@ require('telescope').setup({
   defaults = {
     scroll_strategy = 'limit',
     layout_strategy = 'horizontal',
-    mappings = {
-      i = {
-        -- Map Ctrl-i to insert_path in insert mode
-        ["<M-i>"] = custom_actions.insert_path
-      },
-      n = {
-        -- Map i to insert_path in normal mode
-        ["<M-i>"] = custom_actions.insert_path
-      },
-    },  
+    },
   }
 })
 require('telescope').load_extension('fzf')
@@ -117,8 +108,8 @@ map("n", "<leader>l", function() harpoon:list():select(3) end)
 map("n", "<leader>;", function() harpoon:list():select(4) end)
 
 -- Toggle previous & next buffers stored within Harpoon list
-map("n", "<C-u>", function() harpoon:list():prev() end)
-map("n", "<C-i>", function() harpoon:list():next() end)
+map("n", "<C-n>", function() harpoon:list():prev() end)
+map("n", "<C-m>", function() harpoon:list():next() end)
 
 -- basic telescope configuration
 local conf = require("telescope.config").values
