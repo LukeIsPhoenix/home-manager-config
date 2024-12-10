@@ -27,7 +27,6 @@ map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 local actions = require('telescope.actions')
 local action_state = require('telescope.actions.state')
 -- Set your fixed file path here
-local fixed_path = "~/gitprojects/personal/"
 function recent_files()
   require('telescope.builtin').find_files({
     prompt_title = "Recent Files",
@@ -75,7 +74,9 @@ require('lualine').setup {
 
 require("toggleterm").setup {
   open_mapping = [[<c-\>]],
-  insert_mappings = true
+  insert_mappings = true,
+  dir = git_dir,
+  size = 20
 }
 
 local harpoon = require("harpoon")
@@ -85,7 +86,8 @@ harpoon:setup()
 -- REQUIRED
 
 map("n", "<leader>ha", function() harpoon:list():add() end)
-map("n", "<leader>hd", function() harpoon:list():remove() end)
+map("n", "<leader>hr", function() harpoon:list():remove() end)
+map("n", "<leader>hc", function() harpoon:list():clear() end)
 
 map("n", "<leader>j", function() harpoon:list():select(1) end)
 map("n", "<leader>k", function() harpoon:list():select(2) end)
