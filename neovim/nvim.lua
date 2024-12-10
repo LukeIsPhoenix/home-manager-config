@@ -12,14 +12,16 @@ map("n", "<leader>qd", function() require("persistence").stop() end, { desc = "S
 map("n", "<leader>lg", ":LazyGit<CR>")
 map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 
--- -- oil setup
--- require("oil").setup({
--- 	cleanup_delay_ms = 1000,
--- 	view_options = {
--- 	  show_hidden = true
--- 	}
--- })
--- vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
+-- oil setup
+require("oil").setup({
+	cleanup_delay_ms = 1000,
+	view_options = {
+	  show_hidden = true
+	}
+})
+vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
+
+require('leap').create_default_mappings()
 
 -- TELESCOPE FUNCTIONS
 -- part of the config
@@ -71,6 +73,26 @@ require('lualine').setup {
     lualine_c = { { 'filename', path = 2 } }
   }
 }
+
+require('gitsigns').setup{
+  current_line_blame = true
+}
+
+local cmp = require'cmp'
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+  }),
+})
+
+require("nvim-autopairs").setup()
 
 require("toggleterm").setup {
   open_mapping = [[<c-\>]],
@@ -124,6 +146,11 @@ colorscheme catppuccin-macchiato
 set noswapfile
 set number relativenumber
 set scrolloff=5
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+set clipboard=unnamedplus
 
 " Telescope searching
 " clear the highlighting from search

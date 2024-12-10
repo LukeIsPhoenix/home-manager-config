@@ -13,19 +13,24 @@ in
   programs.neovim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
-      # conform-nvim
+      conform-nvim
       hardtime-nvim
       # limelight-vim
-      # oil-nvim
+      oil-nvim
       gitsigns-nvim
       telescope-nvim
       telescope-fzf-native-nvim
       vim-nix
       vim-lua
       nvim-treesitter.withAllGrammars
-      # vim-lsp
+      nvim-cmp
+      luasnip
+      cmp_luasnip
+      cmp-nvim-lsp
+      nvim-autopairs
+      vim-lsp
       lazygit-nvim
-      # leap-nvim
+      leap-nvim
       toggleterm-nvim
       catppuccin-nvim
       lualine-nvim
