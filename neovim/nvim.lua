@@ -85,6 +85,7 @@ harpoon:setup()
 -- REQUIRED
 
 map("n", "<leader>ha", function() harpoon:list():add() end)
+map("n", "<leader>hd", function() harpoon:list():remove() end)
 
 map("n", "<leader>j", function() harpoon:list():select(1) end)
 map("n", "<leader>k", function() harpoon:list():select(2) end)
@@ -92,8 +93,8 @@ map("n", "<leader>l", function() harpoon:list():select(3) end)
 map("n", "<leader>;", function() harpoon:list():select(4) end)
 
 -- Toggle previous & next buffers stored within Harpoon list
-map("n", "<M-u>", function() harpoon:list():prev() end)
-map("n", "<M-i>", function() harpoon:list():next() end)
+map("n", "<C-u>", function() harpoon:list():prev() end)
+map("n", "<C-i>", function() harpoon:list():next() end)
 
 -- basic telescope configuration
 local conf = require("telescope.config").values
