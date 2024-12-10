@@ -1,21 +1,6 @@
-local map = vim.keymap.set
+map = vim.keymap.set
 
-map("i", "jk", "<ESC>")
--- -- telescope config
--- require('telescope').setup({
---   defaults = {
---     scroll_strategy = 'limit',
---     layout_strategy = 'horizontal',
---     layout_config = {
---       mirror = false,
---       prompt_position = 'top',
---       preview_height = 0.65,
---       width = 0.75,
---       height = 0.95,
---     },
---   }
--- })
--- require('telescope').load_extension('fzf')p("n", "<leader>ll", ":Limelight!!<CR>", { desc = "Toggle Limelight" })
+vim.g.mapleader = " "
 map("n", "<A-j>", ":m .+1<CR>==") -- move line up(n)
 map("n", "<A-k>", ":m .-2<CR>==") -- move line down(n)
 map("v", "<A-j>", ":m '>+1<CR>gv=gv") -- move line up(v)
@@ -24,6 +9,7 @@ map("n", "<leader>qs", function() require("persistence").load() end, { desc = "R
 map("n", "<leader>qS", function() require("persistence").select() end, { desc = "Select session" }) -- select a session to load
 map("n", "<leader>ql", function() require("persistence").load({ last = true }) end, { desc = "Restore last session" }) -- load the last session
 map("n", "<leader>qd", function() require("persistence").stop() end, { desc = "Stop Persistence" }) -- stop Persistence => session won't be saved on exit
+map("n", "<leader>lg", ":LazyGit<CR>")
 map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 
 -- -- oil setup
@@ -61,14 +47,7 @@ end
 require('telescope').setup({
   defaults = {
     scroll_strategy = 'limit',
-    layout_strategy = 'vertical',
-    layout_config = {
-      mirror = true,
-      prompt_position = 'bottom',
-      preview_height = 0.65,
-      width = 0.75,
-      height = 0.95,
-    },
+    layout_strategy = 'horizontal',
     mappings = {
       i = {
         -- Map Ctrl-i to insert_path in insert mode
@@ -85,12 +64,60 @@ require('telescope').load_extension('fzf')
 
 require("hardtime").setup({
   disable_mouse = false,
-  force_exit_insert_mode = true,
-  max_count = 4
+  max_count = 2
 })
 
+require('lualine').setup {
+  sections = {
+    lualine_c = { { 'filename', path = 2 } }
+  }
+}
+
+require("toggleterm").setup {
+  open_mapping = [[<c-\>]],
+  insert_mappings = true
+}
+
+local harpoon = require("harpoon")
+
+-- REQUIRED
+harpoon:setup()
+-- REQUIRED
+
+map("n", "<C-a>", function() harpoon:list():add() end)
+
+map("n", "<C-u>", function() harpoon:list():select(1) end)
+map("n", "<C-i>", function() harpoon:list():select(2) end)
+map("n", "<C-o>", function() harpoon:list():select(3) end)
+map("n", "<C-p>", function() harpoon:list():select(4) end)
+
+-- Toggle previous & next buffers stored within Harpoon list
+map("n", "<M-u>", function() harpoon:list():prev() end)
+map("n", "<M-i>", function() harpoon:list():next() end)
+
+-- basic telescope configuration
+local conf = require("telescope.config").values
+local function toggle_telescope(harpoon_files)
+    local file_paths = {}
+    for _, item in ipairs(harpoon_files.items) do
+        table.insert(file_paths, item.value)
+    end
+
+    require("telescope.pickers").new({}, {
+        prompt_title = "Harpoon",
+        finder = require("telescope.finders").new_table({
+            results = file_paths,
+        }),
+        previewer = conf.file_previewer({}),
+        sorter = conf.generic_sorter({}),
+    }):find()
+end
+
+map("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
+    { desc = "Open harpoon window" })
+
 vim.cmd [[
-let mapleader = "\<Space>"
+colorscheme catppuccin-macchiato
 set noswapfile
 set number relativenumber
 set scrolloff=5
@@ -103,8 +130,8 @@ nnoremap <Leader>W viw"0y<space>:Telescope grep_string<CR><Esc>
 "nnoremap <Leader>F :Telescope grep_string<CR><Esc>
 nnoremap <Leader>F :FzfLua grep_visual<CR>
 
-nnoremap <Leader>f :Telescope live_grep<CR>
-nnoremap <Leader>p :Telescope find_files<CR>
+nnoremap <Leader>fw :Telescope live_grep<CR>
+nnoremap <Leader>ff :Telescope find_files<CR>
 inoremap <M-i> <Esc>:Telescope find_files hidden=true<CR>
 noremap  <M-i> <Esc>:Telescope find_files hidden=true<CR>
 nnoremap <Leader>o :Telescope oldfiles<CR><Esc>
@@ -124,6 +151,7 @@ noremap <silent> <C-k> :<C-U>TmuxNavigateUp<cr>
 noremap <silent> <C-l> :<C-U>TmuxNavigateRight<cr>
 noremap <silent> <C-/> :<C-U>TmuxNavigatePrevious<cr>
 
+
 " mapping with meta 
 nnoremap <M-Left> <C-w>h
 nnoremap <M-Down> <C-w>j
@@ -133,6 +161,4 @@ noremap <silent> <M-Left>  :<C-U>TmuxNavigateLeft<cr>
 noremap <silent> <M-Down>  :<C-U>TmuxNavigateDown<cr>
 noremap <silent> <M-Up>    :<C-U>TmuxNavigateUp<cr>
 noremap <silent> <M-Right> :<C-U>TmuxNavigateRight<cr>
-
-
 ]]

@@ -17,17 +17,21 @@ in
       hardtime-nvim
       # limelight-vim
       # oil-nvim
-      # gitsigns-nvim
+      gitsigns-nvim
       telescope-nvim
       telescope-fzf-native-nvim
       vim-nix
+      vim-lua
+      nvim-treesitter.withAllGrammars
       # vim-lsp
-      # lazygit-nvim
+      lazygit-nvim
       # leap-nvim
-      # toggleterm-nvim
-      # catppuccin-nvim
+      toggleterm-nvim
+      doom-one-nvim
+      catppuccin-nvim
       lualine-nvim
       vim-tmux-navigator
+      harpoon2
     ];
   };
 
