@@ -49,7 +49,6 @@ require('telescope').setup({
   defaults = {
     scroll_strategy = 'limit',
     layout_strategy = 'horizontal',
-    },
   }
 })
 require('telescope').load_extension('fzf')
