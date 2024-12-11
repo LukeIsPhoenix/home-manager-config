@@ -11,6 +11,7 @@ map("n", "<leader>ql", function() require("persistence").load({ last = true }) e
 map("n", "<leader>qd", function() require("persistence").stop() end, { desc = "Stop Persistence" }) -- stop Persistence => session won't be saved on exit
 map("n", "<leader>lg", ":LazyGit<CR>")
 map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
+map("n", "<leader>r", ":checktime<CR>")
 
 -- oil setup
 require("oil").setup({
