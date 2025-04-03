@@ -22,8 +22,6 @@ require("oil").setup({
 })
 vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 
-require('leap').create_default_mappings()
-
 -- TELESCOPE FUNCTIONS
 -- part of the config
 -- Set your fixed file path here
@@ -131,6 +129,14 @@ end
 
 map("n", "<leader>hl", function() toggle_telescope(harpoon:list()) end,
     { desc = "Open harpoon window" })
+
+-- add flash configuration
+require("flash").setup({ modes = { char = { enabled = false }}})
+vim.keymap.set("n", "s", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Normal)" })
+vim.keymap.set("v", "s", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Normal)" })
+-- vim.keymap.set("n", "S", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Normal)" })
+vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
+vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
 
 vim.cmd [[
 colorscheme catppuccin-macchiato

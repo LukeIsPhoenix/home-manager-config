@@ -30,12 +30,12 @@ in
       nvim-autopairs
       vim-lsp
       lazygit-nvim
-      leap-nvim
       toggleterm-nvim
       catppuccin-nvim
       lualine-nvim
       vim-tmux-navigator
       harpoon2
+      flash-nvim
     ];
   };
 
