@@ -28,6 +28,7 @@ in
         cargo
         unzip
         fd
+        hstr
     ];
     
     stateVersion = "24.05";

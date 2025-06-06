@@ -8,6 +8,8 @@ alias tml='tm ls'
 alias tmk='tmux kill-session'
 alias tmK='tmux kill-server'
 export EDITOR="nvim"
+# make a bind for finding history
+bind '"\C-r": "\C-a\C-k hstr \C-j"'
 
 # get current branch in git repo
 function parse_git_branch() {
