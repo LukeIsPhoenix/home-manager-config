@@ -5,9 +5,9 @@ let
   home-manager-src = pkgs.fetchFromGitHub {
     owner = "nix-community";
     repo = "home-manager";
-    # 23.11 release
-    rev = "2f23fa308a7c067e52dfcc30a0758f47043ec176";
-    hash = "sha256-Vl+WVTJwutXkimwGprnEtXc/s/s8sMuXzqXaspIGlwM=";
+    # 25.05 release
+    rev = "3b955f5f0a942f9f60cdc9cacb7844335d0f21c3";
+    hash = "sha256-uhzsV0Q0I9j2y/rfweWeGif5AWe0MGrgZ/3TjpDYdGA=";
   };
 
 
