@@ -29,6 +29,7 @@ in
         unzip
         fd
         hstr
+        nodejs
     ];
     
     stateVersion = "25.05";
