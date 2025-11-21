@@ -141,6 +141,18 @@ vim.keymap.set("v", "s", function() require("flash").jump({ modes = { char = { e
 vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
 vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
 
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
+
 vim.cmd [[
 colorscheme catppuccin-macchiato
 set noswapfile
