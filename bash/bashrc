@@ -11,6 +11,11 @@ export EDITOR="nvim"
 # make a bind for finding history
 bind '"\C-r": "\C-a\C-k hstr \C-j"'
 
+# Increase bash history size
+export HISTSIZE=100000
+export HISTFILESIZE=200000
+export HISTTIMEFORMAT="%F %T "
+
 # get current branch in git repo
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
