@@ -65,34 +65,37 @@ function parse_git_dirty {
 # Old prompt
 # export PS1="\n\[\e[37m\]┌─\[\e[36m\]\u\[\e[m\]\[\e[31m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\]\[\e[33m\][\[\e[m\]\[\e[33m\]\w\[\e[m\]\[\e[33m\]]\[\e[m\]\[\e[31m\]\`parse_git_branch\`\[\e[37m\]\n└──>\[\e[32m\][\d \t]\[\e[37m\]\$ "
 
-# Function to rebuild PS1 dynamically before every prompt display
 set_my_prompt() {
-    # Define colors for readability
     local WHITE="\[\e[37m\]"
     local CYAN="\[\e[36m\]"
     local RED="\[\e[31m\]"
     local YELLOW="\[\e[33m\]"
     local GREEN="\[\e[32m\]"
+    local PURPLE="\[\e[35m\]"  # Added for Nix indicator
     local RESET="\[\e[m\]"
 
-    # Line 1: Top border and User/Host
-    PS1="\n${WHITE}┌─${CYAN}[${RESET}${CYAN}\u${RED}@${CYAN}\h${CYAN}]${RESET}\n"
+    # Check if we are in a nix-shell
+    local NIX_LABEL=""
+    if [ -n "$IN_NIX_SHELL" ]; then
+        NIX_LABEL="${PURPLE}[nix-shell]${RESET}"
+    fi
 
-    # Line 2: Middle border and Directory
+    # Line 1: Added NIX_LABEL here
+    PS1="\n${WHITE}┌─${NIX_LABEL}${CYAN}[${RESET}${CYAN}\u${RED}@${CYAN}\h${CYAN}]${RESET}\n"
+
+    # Line 2: Directory
     PS1+="${WHITE}├─${YELLOW}[${RESET}${YELLOW}\w${YELLOW}]${RESET}\n"
 
     # Line 3: Conditional Git Branch
-    # We call your existing parse_git_branch function here
     local GIT_BR=$(parse_git_branch)
     if [ -n "$GIT_BR" ]; then
         PS1+="${WHITE}├─${RED}${GIT_BR}${RESET}\n"
     fi
 
-    # Line 4: Bottom border, Timestamp, and Prompt Char
+    # Line 4: Bottom border
     PS1+="${WHITE}└─${GREEN}[${RESET}${GREEN}\d \t${GREEN}]${RESET}${WHITE}\$ "
 }
 
-# Ensure Bash runs this function every time it prepares to show the prompt
 PROMPT_COMMAND=set_my_prompt
 
 eval "$(zoxide init bash)"
