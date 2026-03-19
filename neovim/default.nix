@@ -23,12 +23,12 @@ in
       vim-nix
       vim-lua
       nvim-treesitter.withAllGrammars
+      nvim-lspconfig
       nvim-cmp
       luasnip
       cmp_luasnip
       cmp-nvim-lsp
       nvim-autopairs
-      vim-lsp
       lazygit-nvim
       toggleterm-nvim
       catppuccin-nvim

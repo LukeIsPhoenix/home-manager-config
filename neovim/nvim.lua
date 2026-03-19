@@ -13,6 +13,19 @@ map("n", "<leader>lg", ":LazyGit<CR>")
 map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 map("n", "<leader>r", ":checktime<CR>")
 
+vim.lsp.config('gdscript', {
+  setup = {
+    cmd = vim.lsp.rpc.connect('127.0.0.1', 6005),
+  }
+})
+vim.lsp.enable('gdscript')
+
+require('nvim-treesitter.configs').setup({
+  highlight = {
+    enable = true, -- False will disable the whole extension
+  },
+})
+
 -- oil setup
 require("oil").setup({
 	cleanup_delay_ms = 1000,
