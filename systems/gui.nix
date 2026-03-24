@@ -18,5 +18,6 @@ in
     brave
     remmina
     freerdp
+    git
   ];
 }

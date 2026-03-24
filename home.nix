@@ -9,6 +9,8 @@ in
     ./systems/${systemType}.nix
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   home = {
     username = builtins.getEnv "USER";
     homeDirectory = "/home/${builtins.getEnv "USER"}";
@@ -16,4 +18,6 @@ in
   };
 
   programs.home-manager.enable = true;
+
+  targets.genericLinux.enable = true;
 }

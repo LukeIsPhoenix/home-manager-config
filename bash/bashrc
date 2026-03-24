@@ -99,3 +99,8 @@ set_my_prompt() {
 PROMPT_COMMAND=set_my_prompt
 
 eval "$(zoxide init bash)"
+
+# Source Home Manager environment
+if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+  . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
