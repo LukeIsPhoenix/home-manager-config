@@ -12,7 +12,6 @@ in
     gimp
     gnome-calculator
     godotPackages_4_6.godot
-    kitty
     google-chrome
     mattermost-desktop
     brave
@@ -20,4 +19,16 @@ in
     freerdp
     git
   ];
+
+  programs.kitty = {
+    enable = true;
+    themeFile = "Catppuccin-Macchiato";
+  };
+
+  xdg.terminal-exec = {
+    enable = true;
+    settings = {
+      default = [ "kitty.desktop" ];
+    };
+  };
 }
