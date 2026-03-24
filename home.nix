@@ -1,19 +1,23 @@
 { config, pkgs, lib, ... }:
 let
-  hostname = config.nixpkgs.hostName;
   hosts = import ./systems/hosts.nix;
-  systemType = if lib.elem hostname hosts.gui then "gui" else "terminal";
+  isGui = lib.elem config.nixpkgs.hostName hosts.gui;
+  isTerminal = lib.elem config.nixpkgs.hostName hosts.terminal;
 in
-{
-  imports = [
-    ./systems/${systemType}.nix
-  ];
+lib.mkMerge [
+  # Common configuration for all hosts
+  {
+    home = {
+      username = builtins.getEnv "USER";
+      homeDirectory = "/home/${builtins.getEnv "USER"}";
+      stateVersion = "25.11";
+    };
+    programs.home-manager.enable = true;
+  }
 
-  home = {
-    username = builtins.getEnv "USER";
-    homeDirectory = "/home/${builtins.getEnv "USER"}";
-    stateVersion = "25.11";
-  };
+  # Apply terminal configuration for both terminal and GUI machines
+  (lib.mkIf (isTerminal || isGui) (import ./systems/terminal.nix))
 
-  programs.home-manager.enable = true;
-}
+  # Apply GUI configuration only for GUI machines
+  (lib.mkIf isGui (import ./systems/gui.nix { inherit pkgs; }))
+]
