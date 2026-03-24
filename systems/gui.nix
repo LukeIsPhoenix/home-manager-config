@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 {
+  imports = [ ./terminal.nix ];
+
   home.packages = with pkgs; [
     spotify
     gemini-cli
