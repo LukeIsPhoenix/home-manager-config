@@ -17,7 +17,7 @@ in
     brave
     remmina
     freerdp
-    git
+    aseprite
   ];
 
   programs.kitty = {
