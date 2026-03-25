@@ -7,6 +7,7 @@ in
   imports = [ ./terminal.nix ];
 
   home.packages = with pkgs; terminal.home.packages ++ [
+    discord
     spotify
     gemini-cli
     gimp
@@ -19,6 +20,7 @@ in
     freerdp
     aseprite
     blender
+    desktop-file-utils
   ];
 
   programs.kitty = {
