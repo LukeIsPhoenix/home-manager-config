@@ -18,6 +18,7 @@ in
     remmina
     freerdp
     aseprite
+    blender
   ];
 
   programs.kitty = {
