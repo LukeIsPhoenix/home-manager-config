@@ -20,6 +20,7 @@ in
     freerdp
     aseprite
     blender
+    blockbench
     desktop-file-utils
   ];
 
