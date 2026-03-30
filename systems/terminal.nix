@@ -23,6 +23,7 @@
     fd
     hstr
     nodejs
+    gemini-cli
   ];
 
   programs = {
