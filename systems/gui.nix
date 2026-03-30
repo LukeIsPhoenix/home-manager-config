@@ -13,7 +13,7 @@ in
     spotify
     gimp
     gnome-calculator
-    godotPackages_4_6.godot
+    pkgsUnstable.godot
     google-chrome
     mattermost-desktop
     brave
