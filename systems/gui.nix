@@ -1,10 +1,12 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, pkgsUnstable, ... }:
 
 let
-  terminal = import ./terminal.nix { inherit pkgs; };
+  terminal = import ./terminal.nix { inherit config pkgs lib pkgsUnstable; };
 in
 {
-  imports = [ ./terminal.nix ];
+  imports = [
+    (import ./terminal.nix { inherit config pkgs lib pkgsUnstable; })
+  ];
 
   home.packages = with pkgs; terminal.home.packages ++ [
     discord

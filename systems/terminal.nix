@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgsUnstable, ... }:
 
 {
   imports = [
@@ -23,7 +23,7 @@
     fd
     hstr
     nodejs
-    gemini-cli
+    pkgsUnstable.gemini-cli
   ];
 
   programs = {
