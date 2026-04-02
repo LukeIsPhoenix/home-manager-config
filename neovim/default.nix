@@ -14,7 +14,6 @@ in
     enable = true;
     plugins = with pkgs.vimPlugins; [
       conform-nvim
-      hardtime-nvim
       # limelight-vim
       oil-nvim
       gitsigns-nvim
@@ -38,7 +37,7 @@ in
       flash-nvim
       render-markdown-nvim
       bullets-vim
-      table-mode
+      vim-table-mode
       glow-nvim
       img-clip-nvim
       outline-nvim

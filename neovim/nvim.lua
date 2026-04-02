@@ -2,6 +2,8 @@ map = vim.keymap.set
 
 vim.g.mapleader = " "
 vim.o.autoread = true
+vim.opt.conceallevel = 2 -- Required for render-markdown alignment
+
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
   command = "if mode() != 'c' | checktime | endif",
   pattern = "*",
@@ -10,7 +12,7 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function()
-    vim.cmd("TableModeEnable")
+    -- Enable specific markdown settings if needed
   end,
 })
 map("n", "<A-j>", ":m .+1<CR>==") -- move line up(n)
@@ -37,30 +39,52 @@ end
 
 safe_require('render-markdown', {
   enabled = true,
-  table = {
-    enabled = true,
-    alignment_indicator = true,
-  },
-  anti_conceal = { enabled = false },
 })
 vim.lsp.enable('marksman')
 safe_require('img-clip')
 safe_require('glow')
 safe_require('outline')
-safe_require('mkdnflow')
+safe_require('mkdnflow', {
+  modules = {
+    links = true,
+  },
+})
 
--- Grammar & Formatting
-vim.lsp.enable('marksman')
+-- Table Mode Configuration
+vim.g.table_mode_corner = '|'
+vim.g.table_mode_syntax = 1
+vim.g.table_mode_header_fillchar = '-'
 
-vim.g.table_mode_corner = '|' -- use | for table corners
-vim.g.table_mode_syntax = 1   -- help with header alignment
-vim.g.table_mode_always_fill_cells = 1 -- keep cells filled for alignment
+-- Auto-enable Table Mode for Markdown
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.cmd("TableModeEnable")
+    
+    -- Local mappings for Markdown only
+    local opts = { buffer = true, silent = true }
+    
+    -- Tab to indent whole line
+    vim.keymap.set("i", "<Tab>", "<C-t>", opts)
+    vim.keymap.set("i", "<S-Tab>", "<C-d>", opts)
+    
+    -- Enter to continue list/checkbox (using bullets-vim feature)
+    -- This is usually handled automatically by bullets-vim, 
+    -- but we ensure it's active here.
+    vim.opt_local.formatoptions:append("ro")
+    vim.opt_local.comments:append("b:- [ ]")
+    vim.opt_local.comments:append("b:- [x]")
+    vim.opt_local.comments:append("b:-")
+    vim.opt_local.comments:append("b:*")
+  end,
+})
 
 -- Keybindings for Markdown
 map("n", "<leader>tm", ":TableModeToggle<CR>", { desc = "Toggle Table Mode" })
 map("n", "<leader>gm", ":Glow<CR>", { desc = "Glow Preview" })
 map("n", "<leader>to", ":Outline<CR>", { desc = "Toggle Outline" })
 map("n", "<leader>pm", ":MarkdownPreviewToggle<CR>", { desc = "Browser Preview" })
+map("n", "<leader>tr", ":TableModeRealign<CR>", { desc = "Realign Table" })
 
 -- Checkbox Toggle Logic (Improved)
 function toggle_checkbox()
@@ -68,6 +92,7 @@ function toggle_checkbox()
   local indent = line:match("^%s*")
   local content = line:sub(#indent + 1)
 
+  -- Standard Toggle Logic
   -- 1. If it's a checked box (with any bullet *, -, +), uncheck it
   if content:match("^[%*%-%+]%s%[x%]") then
     line = indent .. content:gsub("^([%*%-%+]%s)%[x%]", "%1[ ]", 1)
@@ -140,11 +165,6 @@ require('telescope').setup({
 })
 require('telescope').load_extension('fzf')
 
-require("hardtime").setup({
-  disable_mouse = false,
-  max_count = 2
-})
-
 require('lualine').setup {
   sections = {
     lualine_c = { { 'filename', path = 2 } }
@@ -178,6 +198,8 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
+      elseif vim.bo.filetype == 'markdown' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-t>", true, true, true), "n", true)
       else
         fallback()
       end
@@ -185,6 +207,8 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
+      elseif vim.bo.filetype == 'markdown' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-d>", true, true, true), "n", true)
       else
         fallback()
       end
