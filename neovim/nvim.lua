@@ -106,12 +106,34 @@ function toggle_checkbox()
   else
     line = indent .. "- [ ] " .. content
   end
+
+  vim.api.nvim_set_current_line(line)
+end
+
+-- Bullet Toggle Logic
+function toggle_bullet()
+  local line = vim.api.nvim_get_current_line()
+  local indent = line:match("^%s*")
+  local content = line:sub(#indent + 1)
+
+  -- 1. If it's a checkbox (checked or unchecked), convert to bullet
+  if content:match("^[%*%-%+]%s%[[x%s]%]") then
+    line = indent .. content:gsub("^([%*%-%+]%s)%[[x%s]%]%s*", "%1", 1)
+  -- 2. If it's just a bullet point, remove it
+  elseif content:match("^[%*%-%+]%s") then
+    line = indent .. content:gsub("^[%*%-%+]%s*", "", 1)
+  -- 3. If it's just text, add a bullet point
+  else
+    line = indent .. "- " .. content
+  end
   
   vim.api.nvim_set_current_line(line)
 end
 
 map("n", "<C-x>", toggle_checkbox, { desc = "Toggle Checkbox" })
 map("i", "<C-x>", function() toggle_checkbox() end, { desc = "Toggle Checkbox (Insert mode)" })
+map("n", "<C-b>", toggle_bullet, { desc = "Toggle Bullet" })
+map("i", "<C-b>", function() toggle_bullet() end, { desc = "Toggle Bullet (Insert mode)" })
 
 vim.lsp.config('gdscript', {
   setup = {
