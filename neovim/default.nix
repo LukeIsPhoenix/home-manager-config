@@ -36,12 +36,21 @@ in
       vim-tmux-navigator
       harpoon2
       flash-nvim
+      render-markdown-nvim
+      bullets-vim
+      table-mode
+      glow-nvim
+      img-clip-nvim
+      outline-nvim
+      mkdnflow-nvim
+      markdown-preview-nvim
     ];
   };
 
-  # home.packages = [
-  #   nixos-unstable.neovim
-  # ];
+  home.packages = with pkgs; [
+    marksman
+    glow
+  ];
 
   home.file.".config/nvim/init.lua" = {
     enable = true;

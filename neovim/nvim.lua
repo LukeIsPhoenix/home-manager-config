@@ -6,6 +6,13 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
   command = "if mode() != 'c' | checktime | endif",
   pattern = "*",
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.cmd("TableModeEnable")
+  end,
+})
 map("n", "<A-j>", ":m .+1<CR>==") -- move line up(n)
 map("n", "<A-k>", ":m .-2<CR>==") -- move line down(n)
 map("v", "<A-j>", ":m '>+1<CR>gv=gv") -- move line up(v)
@@ -17,6 +24,69 @@ map("n", "<leader>qd", function() require("persistence").stop() end, { desc = "S
 map("n", "<leader>lg", ":LazyGit<CR>")
 map("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 map("n", "<leader>r", ":checktime<CR>")
+
+-- Safe plugin initialization
+local function safe_require(module, config)
+  local status, plugin = pcall(require, module)
+  if status then
+    if config then plugin.setup(config) elseif plugin.setup then plugin.setup() end
+  else
+    vim.notify("Plugin not found: " .. module, vim.log.levels.WARN)
+  end
+end
+
+safe_require('render-markdown', {
+  enabled = true,
+  table = {
+    enabled = true,
+    alignment_indicator = true,
+  },
+  anti_conceal = { enabled = false },
+})
+vim.lsp.enable('marksman')
+safe_require('img-clip')
+safe_require('glow')
+safe_require('outline')
+safe_require('mkdnflow')
+
+-- Grammar & Formatting
+vim.lsp.enable('marksman')
+
+vim.g.table_mode_corner = '|' -- use | for table corners
+vim.g.table_mode_syntax = 1   -- help with header alignment
+vim.g.table_mode_always_fill_cells = 1 -- keep cells filled for alignment
+
+-- Keybindings for Markdown
+map("n", "<leader>tm", ":TableModeToggle<CR>", { desc = "Toggle Table Mode" })
+map("n", "<leader>gm", ":Glow<CR>", { desc = "Glow Preview" })
+map("n", "<leader>to", ":Outline<CR>", { desc = "Toggle Outline" })
+map("n", "<leader>pm", ":MarkdownPreviewToggle<CR>", { desc = "Browser Preview" })
+
+-- Checkbox Toggle Logic (Improved)
+function toggle_checkbox()
+  local line = vim.api.nvim_get_current_line()
+  local indent = line:match("^%s*")
+  local content = line:sub(#indent + 1)
+
+  -- 1. If it's a checked box (with any bullet *, -, +), uncheck it
+  if content:match("^[%*%-%+]%s%[x%]") then
+    line = indent .. content:gsub("^([%*%-%+]%s)%[x%]", "%1[ ]", 1)
+  -- 2. If it's an unchecked box, check it
+  elseif content:match("^[%*%-%+]%s%[%s%]") then
+    line = indent .. content:gsub("^([%*%-%+]%s)%[%s%]", "%1[x]", 1)
+  -- 3. If it's just a bullet point, convert to checkbox
+  elseif content:match("^[%*%-%+]%s") then
+    line = indent .. content:gsub("^[%*%-%+]%s", "- [ ] ", 1)
+  -- 4. If it's just text, add a checkbox
+  else
+    line = indent .. "- [ ] " .. content
+  end
+  
+  vim.api.nvim_set_current_line(line)
+end
+
+map("n", "<C-x>", toggle_checkbox, { desc = "Toggle Checkbox" })
+map("i", "<C-x>", function() toggle_checkbox() end, { desc = "Toggle Checkbox (Insert mode)" })
 
 vim.lsp.config('gdscript', {
   setup = {
@@ -96,6 +166,30 @@ cmp.setup({
       require('luasnip').lsp_expand(args.body)
     end,
   },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ 
+      select = true, 
+      behavior = cmp.ConfirmBehavior.Replace 
+    }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
