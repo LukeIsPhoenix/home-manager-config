@@ -1,14 +1,12 @@
 { config, pkgs, lib, ... }:
 let
   currentHostName = builtins.getEnv "NIX_HOSTNAME";
-  hosts = import ./systems/hosts.nix;
-  systemType = if lib.elem currentHostName hosts.gui then "gui" else "terminal";
+  hosts = import ./hosts.nix;
+  hostConfigs = hosts.${currentHostName} or [ "terminal" ];
   pkgsUnstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {};
 in
 {
-  imports = [
-    (import ./systems/${systemType}.nix { inherit pkgs lib config pkgsUnstable; })
-  ];
+  imports = map (name: import ./profiles/${name}.nix { inherit pkgs lib config pkgsUnstable; }) hostConfigs;
 
   nixpkgs.config.allowUnfree = true;
 
