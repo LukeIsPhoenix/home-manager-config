@@ -89,46 +89,54 @@ map("n", "<leader>tr", ":TableModeRealign<CR>", { desc = "Realign Table" })
 
 -- Checkbox Toggle Logic (Improved)
 function toggle_checkbox()
-  local line = vim.api.nvim_get_current_line()
-  local indent = line:match("^%s*")
-  local content = line:sub(#indent + 1)
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local old_line = vim.api.nvim_get_current_line()
+  local indent = old_line:match("^%s*")
+  local content = old_line:sub(#indent + 1)
+  local new_line
 
   -- Standard Toggle Logic
   -- 1. If it's a checked box (with any bullet *, -, +), uncheck it
   if content:match("^[%*%-%+]%s%[x%]") then
-    line = indent .. content:gsub("^([%*%-%+]%s)%[x%]", "%1[ ]", 1)
+    new_line = indent .. content:gsub("^([%*%-%+]%s)%[x%]", "%1[ ]", 1)
   -- 2. If it's an unchecked box, check it
   elseif content:match("^[%*%-%+]%s%[%s%]") then
-    line = indent .. content:gsub("^([%*%-%+]%s)%[%s%]", "%1[x]", 1)
+    new_line = indent .. content:gsub("^([%*%-%+]%s)%[%s%]", "%1[x]", 1)
   -- 3. If it's just a bullet point, convert to checkbox
   elseif content:match("^[%*%-%+]%s") then
-    line = indent .. content:gsub("^[%*%-%+]%s", "- [ ] ", 1)
+    new_line = indent .. content:gsub("^[%*%-%+]%s", "- [ ] ", 1)
   -- 4. If it's just text, add a checkbox
   else
-    line = indent .. "- [ ] " .. content
+    new_line = indent .. "- [ ] " .. content
   end
 
-  vim.api.nvim_set_current_line(line)
+  vim.api.nvim_set_current_line(new_line)
+  local diff = #new_line - #old_line
+  vim.api.nvim_win_set_cursor(0, {cursor[1], math.max(0, cursor[2] + diff)})
 end
 
 -- Bullet Toggle Logic
 function toggle_bullet()
-  local line = vim.api.nvim_get_current_line()
-  local indent = line:match("^%s*")
-  local content = line:sub(#indent + 1)
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local old_line = vim.api.nvim_get_current_line()
+  local indent = old_line:match("^%s*")
+  local content = old_line:sub(#indent + 1)
+  local new_line
 
   -- 1. If it's a checkbox (checked or unchecked), convert to bullet
   if content:match("^[%*%-%+]%s%[[x%s]%]") then
-    line = indent .. content:gsub("^([%*%-%+]%s)%[[x%s]%]%s*", "%1", 1)
+    new_line = indent .. content:gsub("^([%*%-%+]%s)%[[x%s]%]%s*", "%1", 1)
   -- 2. If it's just a bullet point, remove it
   elseif content:match("^[%*%-%+]%s") then
-    line = indent .. content:gsub("^[%*%-%+]%s*", "", 1)
+    new_line = indent .. content:gsub("^[%*%-%+]%s*", "", 1)
   -- 3. If it's just text, add a bullet point
   else
-    line = indent .. "- " .. content
+    new_line = indent .. "- " .. content
   end
   
-  vim.api.nvim_set_current_line(line)
+  vim.api.nvim_set_current_line(new_line)
+  local diff = #new_line - #old_line
+  vim.api.nvim_win_set_cursor(0, {cursor[1], math.max(0, cursor[2] + diff)})
 end
 
 map("n", "<C-x>", toggle_checkbox, { desc = "Toggle Checkbox" })
