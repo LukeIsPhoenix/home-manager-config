@@ -47,6 +47,7 @@ safe_require('outline')
 safe_require('mkdnflow', {
   modules = {
     links = true,
+    maps = false,
   },
 })
 
