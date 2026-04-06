@@ -3,7 +3,15 @@
 {
   home.packages = with pkgs; [
     discord
-    spotify
+    (symlinkJoin {
+      name = "spotify";
+      paths = [ spotify ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/spotify \
+          --add-flags "--ozone-platform=x11"
+      '';
+    })
     gimp
     gnome-calculator
     google-chrome
