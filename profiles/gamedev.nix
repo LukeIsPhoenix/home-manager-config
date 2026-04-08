@@ -6,5 +6,6 @@
     aseprite
     blender
     blockbench
+    steam
   ];
 }
