@@ -39,6 +39,20 @@ end
 
 safe_require('render-markdown', {
   enabled = true,
+  win_options = {
+    breakindent = {
+      default = true,
+      rendered = true,
+    },
+    linebreak = {
+      default = true,
+      rendered = true,
+    },
+    wrap = {
+      default = true,
+      rendered = true,
+    },
+  },
 })
 vim.lsp.enable('marksman')
 safe_require('img-clip')
