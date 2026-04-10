@@ -24,6 +24,7 @@
     hstr
     nodejs
     pkgsUnstable.gemini-cli
+    btop
   ];
 
   programs = {
