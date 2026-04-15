@@ -6,6 +6,7 @@
     aseprite
     blender
     blockbench
-    steam
+    pkgsUnstable.steam
+    pkgsUnstable.steam-run
   ];
 }
