@@ -19,6 +19,7 @@
     brave
     remmina
     freerdp
+    appimage-run
   ];
 
   programs.kitty = {
