@@ -322,17 +322,8 @@ vim.keymap.set("v", "s", function() require("flash").jump({ modes = { char = { e
 vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
 vim.keymap.set("i", "<C-s>", function() require("flash").jump({ modes = { char = { enabled = false }}}) end, { desc = "Flash Jump (Insert)" })
 
-vim.g.clipboard = {
-  name = 'OSC 52',
-  copy = {
-    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-  },
-  paste = {
-    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-  },
-}
+-- Clipboard configuration (using system clipboard if available)
+vim.opt.clipboard = 'unnamedplus'
 
 vim.cmd [[
 colorscheme catppuccin-macchiato
@@ -343,7 +334,6 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
-set clipboard=unnamedplus
 
 " Telescope searching
 " clear the highlighting from search

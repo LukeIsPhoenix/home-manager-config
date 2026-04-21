@@ -24,6 +24,9 @@
   programs.kitty = {
     enable = true;
     themeFile = "Catppuccin-Macchiato";
+    settings = {
+      clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
+    };
   };
 
   xdg.terminal-exec = {

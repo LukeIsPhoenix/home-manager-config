@@ -25,6 +25,8 @@
     nodejs
     pkgsUnstable.gemini-cli
     btop
+    xclip
+    wl-clipboard
   ];
 
   programs = {
