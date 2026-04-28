@@ -16,10 +16,19 @@
     gnome-calculator
     google-chrome
     mattermost-desktop
-    brave
+    (symlinkJoin {
+      name = "brave";
+      paths = [ brave ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/brave \
+          --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations"
+      '';
+    })
     remmina
     freerdp
     appimage-run
+    wireguard-tools
   ];
 
   programs.kitty = {
