@@ -27,6 +27,7 @@
     btop
     xclip
     wl-clipboard
+    docker
   ];
 
   programs = {

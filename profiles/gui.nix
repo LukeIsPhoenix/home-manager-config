@@ -1,7 +1,11 @@
 { pkgs, pkgsUnstable, ... }:
 
+let
+  zen-browser = (builtins.getFlake "github:0xc000022070/zen-browser-flake").packages.${pkgs.system}.default;
+in
 {
   home.packages = with pkgs; [
+    zen-browser
     discord
     (symlinkJoin {
       name = "spotify";
