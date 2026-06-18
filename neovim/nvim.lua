@@ -165,10 +165,11 @@ vim.lsp.config('gdscript', {
 })
 vim.lsp.enable('gdscript')
 
-require('nvim-treesitter.configs').setup({
-  highlight = {
-    enable = true, -- False will disable the whole extension
-  },
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = '*',
+  callback = function()
+    pcall(vim.treesitter.start)
+  end,
 })
 
 -- oil setup

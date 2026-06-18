@@ -12,6 +12,9 @@ in
 {
   programs.neovim = {
     enable = true;
+    initLua = ''
+      dofile("${config.home.homeDirectory}/repos/home-manager-config/neovim/nvim.lua")
+    '';
     plugins = with pkgs.vimPlugins; [
       conform-nvim
       # limelight-vim
@@ -21,6 +24,7 @@ in
       telescope-fzf-native-nvim
       vim-nix
       vim-lua
+      nvim-treesitter
       nvim-treesitter.withAllGrammars
       nvim-lspconfig
       nvim-cmp
@@ -51,8 +55,4 @@ in
     glow
   ];
 
-  home.file.".config/nvim/init.lua" = {
-    enable = true;
-    source = link ./nvim.lua;
-  };
 }
