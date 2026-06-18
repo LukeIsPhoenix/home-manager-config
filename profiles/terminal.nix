@@ -28,6 +28,8 @@
     xclip
     wl-clipboard
     docker
+    antigravity
+    pkgsUnstable.antigravity-cli
   ];
 
   programs = {
