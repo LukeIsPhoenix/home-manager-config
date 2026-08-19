@@ -49,4 +49,17 @@ in
       default = [ "kitty.desktop" ];
     };
   };
+
+  home.file.".local/share/applications/Mattermost.Desktop.desktop".text = ''
+    [Desktop Entry]
+    Name=Mattermost
+    Comment=Mattermost Desktop application for Linux
+    Exec=${pkgs.mattermost-desktop}/bin/mattermost-desktop %U
+    Terminal=false
+    Type=Application
+    MimeType=x-scheme-handler/mattermost
+    Icon=mattermost-desktop
+    StartupWMClass=mattermost-desktop
+    Categories=Network;InstantMessaging;
+  '';
 }
