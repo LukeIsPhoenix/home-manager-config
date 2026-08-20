@@ -13,7 +13,7 @@ in
       nativeBuildInputs = [ makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/spotify \
-          --add-flags "--ozone-platform=x11"
+          --set NIXOS_OZONE_WL "0"
       '';
     })
     gimp
