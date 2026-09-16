@@ -15,6 +15,85 @@ export HISTSIZE=100000
 export HISTFILESIZE=200000
 export HISTTIMEFORMAT="%F %T "
 
+log() {
+  local entry="$*"
+  if [ -z "$entry" ]; then
+    read -rp "Log entry: " entry
+  fi
+  if [ -z "$entry" ]; then
+    echo "No log entry provided."
+    return 1
+  fi
+
+  local prompt="Read instructions.md and follow Mode 1 (Task Intake & Updates) to update active.md based on this input: $entry"
+  (cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.5-flash)
+
+  grep -E '^\s*- \[ \]' "$HOME/repos/it-notes/active.md"
+}
+
+cleanup() {
+  echo "Archiving tasks and generating SOPs..."
+  local prompt="Read instructions.md and execute Mode 2 (SOP Generation & Archiving). Scan active.md for completed tasks (- [x]), generate SOPs in sops/ for tasks with technical notes, and move completed tasks to archive.md."
+  (cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.5-flash)
+
+  echo "New SOPs created/updated:"
+  ls -1t "$HOME/repos/it-notes/sops" | head -n 5
+}
+
+solve() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: solve <description of issue>"
+    return 1
+  fi
+
+  echo "Searching for solution..."
+
+  local prompt="Review the markdown files in the sops/ directory. Find the SOP that best matches the issue: '$*'. Output EXACTLY the relative file path and line number of its heading in the format 'filepath:linenumber' (e.g., 'sops/gitlab.md:42'). If no relevant SOP exists, output exactly 'NOT_FOUND'. Do not output conversational text or markdown code blocks."
+
+  # Capture the AI output and strip whitespace/newlines
+  local result
+  result=$(cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.1-pro | tr -d '`\r' | xargs)
+
+  # Check if AI failed to find a match
+  if [[ "$result" == *"NOT_FOUND"* ]] || [[ -z "$result" ]]; then
+    echo "No matching SOP found."
+    return 1
+  fi
+
+  # Parse the filepath and line number
+  local file="${result%%:*}"
+  local line="${result##*:}"
+  local full_path="$HOME/repos/it-notes/$file"
+
+  # Verify the file exists and line is numeric before launching neovim
+  if [[ -f "$full_path" && "$line" =~ ^[0-9]+$ ]]; then
+    nvim "+$line" "$full_path"
+  else
+    echo "Error parsing AI output. Raw AI Output: $result"
+    return 1
+  fi
+}
+
+importsop() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: importsop <path/to/file>"
+    return 1
+  fi
+  
+  local file_path="$1"
+  
+  if [ ! -f "$file_path" ]; then
+    echo "Error: File '$file_path' not found."
+    return 1
+  fi
+  
+  local prompt="Analyze the following reference notes. Improve the formatting, clarity, and structure to create a professional step-by-step SOP. Identify the broad IT system or category. Locate a file in the sops/ directory named after that category (e.g., sops/networking.md). If it does not exist, create it. Append the improved SOP to the bottom of that file under a new '## [Procedure Name]' heading. Modify the file silently without conversational output. Notes to process:\n\n$(cat "$file_path")"
+  
+  (cd "$HOME/repos/it-notes" && echo -e "$prompt" | agy --model gemini-3.5-flash)
+  
+  echo "File processed and SOP appended."
+}
+
 # get current branch in git repo
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
