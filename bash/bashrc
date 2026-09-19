@@ -15,6 +15,37 @@ export HISTSIZE=100000
 export HISTFILESIZE=200000
 export HISTTIMEFORMAT="%F %T "
 
+run_with_spinner() {
+  local msg="$1"
+  shift
+  local spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+
+  tput civis 2>/dev/null
+
+  local was_m=0
+  [[ $- == *m* ]] && was_m=1
+  set +m
+  { "$@" & } 2>/dev/null
+  local pid=$!
+  local i=0
+
+  trap 'kill -9 "$pid" 2>/dev/null; tput cnorm 2>/dev/null; printf "\r\033[K" >&2; return 130' INT TERM
+
+  while kill -0 "$pid" 2>/dev/null; do
+    printf "\r\033[K%s %s" "${spin[i]}" "$msg" >&2
+    i=$(((i + 1) % ${#spin[@]}))
+    sleep 0.1
+  done
+
+  wait "$pid" 2>/dev/null
+  local exit_code=$?
+  trap - INT TERM
+  tput cnorm 2>/dev/null
+  printf "\r\033[K" >&2
+  [ $was_m -eq 1 ] && set -m
+  return $exit_code
+}
+
 log() {
   local entry="$*"
   if [ -z "$entry" ]; then
@@ -26,16 +57,71 @@ log() {
   fi
 
   local prompt="Read instructions.md and follow Mode 1 (Task Intake & Updates) to update active.md based on this input: $entry"
-  (cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.5-flash)
+  run_with_spinner "Updating tasks with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && agy --model gemini-3.5-flash --print \"\$1\"" _ "$prompt"
 
-  grep -E '^\s*- \[ \]' "$HOME/repos/it-notes/active.md"
+  echo ""
+  echo "=== Logged Changes ==="
+  (
+    cd "$HOME/repos/it-notes" || return
+    awk '
+      NR == FNR {
+        if ($0 ~ /^@@ -[0-9]+(,[0-9]+)? \+[0-9]+(,[0-9]+)? @@/) {
+          match($0, /\+[0-9]+(,[0-9]+)?/)
+          hunk = substr($0, RSTART+1, RLENGTH-1)
+          split(hunk, a, ",")
+          start = a[1] + 0
+          len = (a[2] != "" ? a[2] + 0 : 1)
+          for (i = 0; i < len; i++) {
+            changed_lines[start + i] = 1
+          }
+        }
+        next
+      }
+      {
+        if ($0 ~ /^# /) {
+          top_header = substr($0, 3)
+        } else if ($0 ~ /^## /) {
+          if (top_header == "Active Tasks") {
+            section_label = "Priority: " substr($0, 4)
+          } else {
+            section_label = "Daily Log (" substr($0, 4) ")"
+          }
+        }
+        if ($0 ~ /^[ \t]*- \[[ x]\] \*\*/ || $0 ~ /^[ \t]*- \*\*/) {
+          current_task = $0
+          task_printed = 0
+        }
+        if (FNR in changed_lines) {
+          has_changes = 1
+          if (section_label != last_section) {
+            if (last_section != "") print ""
+            print "[" section_label "]"
+            last_section = section_label
+          }
+          if (current_task != "" && task_printed == 0 && $0 != current_task) {
+            print "  " current_task
+            task_printed = 1
+          }
+          if ($0 == current_task) {
+            task_printed = 1
+          }
+          print "  " $0
+        }
+      }
+      END {
+        if (!has_changes) {
+          print "No task changes recorded."
+        }
+      }
+    ' <(git diff -U0 active.md) active.md
+  )
 }
 
 cleanup() {
-  echo "Archiving tasks and generating SOPs..."
   local prompt="Read instructions.md and execute Mode 2 (SOP Generation & Archiving). Scan active.md for completed tasks (- [x]), generate SOPs in sops/ for tasks with technical notes, and move completed tasks to archive.md."
-  (cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.5-flash)
+  run_with_spinner "Archiving tasks and generating SOPs with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && agy --model gemini-3.5-flash --print \"\$1\"" _ "$prompt"
 
+  echo ""
   echo "New SOPs created/updated:"
   ls -1t "$HOME/repos/it-notes/sops" | head -n 5
 }
@@ -46,13 +132,11 @@ solve() {
     return 1
   fi
 
-  echo "Searching for solution..."
-
   local prompt="Review the markdown files in the sops/ directory. Find the SOP that best matches the issue: '$*'. Output EXACTLY the relative file path and line number of its heading in the format 'filepath:linenumber' (e.g., 'sops/gitlab.md:42'). If no relevant SOP exists, output exactly 'NOT_FOUND'. Do not output conversational text or markdown code blocks."
 
   # Capture the AI output and strip whitespace/newlines
   local result
-  result=$(cd "$HOME/repos/it-notes" && echo "$prompt" | agy --model gemini-3.1-pro | tr -d '`\r' | xargs)
+  result=$(run_with_spinner "Searching SOPs with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && echo \"\$1\" | agy --model gemini-3.1-pro" _ "$prompt" | tr -d '`\r' | xargs)
 
   # Check if AI failed to find a match
   if [[ "$result" == *"NOT_FOUND"* ]] || [[ -z "$result" ]]; then
@@ -87,10 +171,11 @@ importsop() {
     return 1
   fi
   
-  local prompt="Analyze the following reference notes. Improve the formatting, clarity, and structure to create a professional step-by-step SOP. Identify the broad IT system or category. Locate a file in the sops/ directory named after that category (e.g., sops/networking.md). If it does not exist, create it. Append the improved SOP to the bottom of that file under a new '## [Procedure Name]' heading. Modify the file silently without conversational output. Notes to process:\n\n$(cat "$file_path")"
+  local prompt="Analyze the following reference notes. Improve the formatting, clarity, and structure to create a professional step-by-step SOP. Identify the broad IT system or category. Locate a file in the sops/ directory named after that category (e.g., sops/networking.md). If it does not exist, create it. Append the improved SOP to the bottom of that file under a new '## [Procedure Name]' heading. Notes to process:\n\n$(cat "$file_path")"
   
-  (cd "$HOME/repos/it-notes" && echo -e "$prompt" | agy --model gemini-3.5-flash)
+  run_with_spinner "Generating SOP with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && agy --model gemini-3.5-flash --print \"\$1\"" _ "$prompt"
   
+  echo ""
   echo "File processed and SOP appended."
 }
 
