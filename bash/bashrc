@@ -49,7 +49,7 @@ run_with_spinner() {
 log() {
   local entry="$*"
   if [ -z "$entry" ]; then
-    read -rp "Log entry: " entry
+    read -erp "Log entry: " entry
   fi
   if [ -z "$entry" ]; then
     echo "No log entry provided."
