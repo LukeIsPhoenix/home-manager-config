@@ -25,11 +25,14 @@ run_with_spinner() {
   local was_m=0
   [[ $- == *m* ]] && was_m=1
   set +m
-  { "$@" & } 2>/dev/null
+
+  local tmpout
+  tmpout=$(mktemp)
+  { "$@" >"$tmpout"; } &
   local pid=$!
   local i=0
 
-  trap 'kill -9 "$pid" 2>/dev/null; tput cnorm 2>/dev/null; printf "\r\033[K" >&2; return 130' INT TERM
+  trap 'kill -9 "$pid" 2>/dev/null; tput cnorm 2>/dev/null; printf "\r\033[K" >&2; rm -f "$tmpout"; return 130' INT TERM
 
   while kill -0 "$pid" 2>/dev/null; do
     printf "\r\033[K%s %s" "${spin[i]}" "$msg" >&2
@@ -42,6 +45,8 @@ run_with_spinner() {
   trap - INT TERM
   tput cnorm 2>/dev/null
   printf "\r\033[K" >&2
+  cat "$tmpout"
+  rm -f "$tmpout"
   [ $was_m -eq 1 ] && set -m
   return $exit_code
 }
@@ -136,29 +141,45 @@ solve() {
     return 1
   fi
 
-  local prompt="Review the markdown files in the sops/ directory. Find the SOP that best matches the issue: '$*'. Output EXACTLY the relative file path and line number of its heading in the format 'filepath:linenumber' (e.g., 'sops/gitlab.md:42'). If no relevant SOP exists, output exactly 'NOT_FOUND'. Do not output conversational text or markdown code blocks."
+  local prompt="You are an IT support assistant. Review archive.md for past resolved issues similar to this one: '$*'.
 
-  # Capture the AI output and strip whitespace/newlines
+Summarize any relevant past incidents and exactly what steps resolved them. Be concise and actionable.
+
+Also check if there are any notes indicating what to do if the issue happens again (e.g. escalation steps, permanent fixes, reinstall suggestions). If so, include them under a clearly labeled 'If it happens again:' section.
+
+If there is also a relevant SOP in the sops/ directory, append a final line in EXACTLY this format (nothing else on that line):
+OPEN:sops/filename.md:linenumber
+
+If there is no relevant SOP, do not include an OPEN: line."
+
+  # Capture the AI summary
   local result
-  result=$(run_with_spinner "Searching SOPs with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && echo \"\$1\" | agy --model gemini-3.1-pro" _ "$prompt" | tr -d '`\r' | xargs)
+  result=$(run_with_spinner "Searching past issues with Gemini..." sh -c "cd \"$HOME/repos/it-notes\" && agy --model gemini-3.5-flash --print \"\$1\"" _ "$prompt")
 
-  # Check if AI failed to find a match
-  if [[ "$result" == *"NOT_FOUND"* ]] || [[ -z "$result" ]]; then
-    echo "No matching SOP found."
+  if [[ -z "$result" ]]; then
+    echo "No results found."
     return 1
   fi
 
-  # Parse the filepath and line number
-  local file="${result%%:*}"
-  local line="${result##*:}"
-  local full_path="$HOME/repos/it-notes/$file"
+  # Print the summary, hiding the OPEN: control line
+  echo "$result" | grep -v '^OPEN:'
 
-  # Verify the file exists and line is numeric before launching neovim
-  if [[ -f "$full_path" && "$line" =~ ^[0-9]+$ ]]; then
-    nvim "+$line" "$full_path"
-  else
-    echo "Error parsing AI output. Raw AI Output: $result"
-    return 1
+  # Check if AI recommended opening a SOP file
+  local open_line
+  open_line=$(echo "$result" | grep -oE '^OPEN:sops/[^[:space:]:]+\.[a-z]+:[0-9]+' | head -1)
+
+  if [[ -n "$open_line" ]]; then
+    local match="${open_line#OPEN:}"
+    local file="${match%%:*}"
+    local line="${match##*:}"
+    local full_path="$HOME/repos/it-notes/$file"
+    if [[ -f "$full_path" && "$line" =~ ^[0-9]+$ ]]; then
+      echo ""
+      read -rp "Open SOP '$file'? [Y/n] " confirm
+      if [[ -z "$confirm" || "$confirm" =~ ^[Yy] ]]; then
+        nvim "+$line" "$full_path"
+      fi
+    fi
   fi
 }
 
