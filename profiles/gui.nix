@@ -33,6 +33,7 @@ in
     freerdp
     appimage-run
     wireguard-tools
+    moonlight-qt
   ];
 
   programs.kitty = {
