@@ -15,6 +15,25 @@ export HISTSIZE=100000
 export HISTFILESIZE=200000
 export HISTTIMEFORMAT="%F %T "
 
+dwg() {
+  ssh -p 923 lucas@65.140.157.20
+}
+wg() {
+  ssh -p 920 lucas@65.140.157.20
+}
+wg2() {
+  ssh -p 922 lucas@65.140.157.20
+}
+dwg6() {
+  ssh -p 923 lucas@2001:428:4c02:308::53
+}
+wg6() {
+  ssh -p 920 lucas@2001:428:4c02:308::51
+}
+wg26() {
+  ssh -p 922 lucas@2001:428:4c02:308::52
+}
+
 run_with_spinner() {
   local msg="$1"
   shift
