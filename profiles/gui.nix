@@ -5,7 +5,6 @@ let
 in
 {
   home.packages = with pkgs; [
-    zen-browser
     discord
     (symlinkJoin {
       name = "spotify";
@@ -34,6 +33,7 @@ in
     appimage-run
     wireguard-tools
     moonlight-qt
+    libreoffice
   ];
 
   programs.kitty = {
