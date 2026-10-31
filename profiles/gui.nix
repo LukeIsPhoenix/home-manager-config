@@ -34,6 +34,7 @@ in
     wireguard-tools
     moonlight-qt
     libreoffice
+    davinci-resolve
   ];
 
   programs.kitty = {
