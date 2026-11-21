@@ -223,6 +223,84 @@ importsop() {
   echo "File processed and SOP appended."
 }
 
+# Work-brain task tracking & documentation helpers
+export WORK_BRAIN_DIR="$HOME/repos/notes"
+
+_wt_clipboard() {
+  if command -v wl-paste >/dev/null 2>&1; then
+    wl-paste -n
+  elif command -v xclip >/dev/null 2>&1; then
+    xclip -o -selection clipboard
+  elif command -v xsel >/dev/null 2>&1; then
+    xsel -ob
+  elif command -v pbpaste >/dev/null 2>&1; then
+    pbpaste
+  else
+    echo "No clipboard utility found (install wl-paste, xclip, or xsel)." >&2
+    return 1
+  fi
+}
+
+wt-new() {
+  local input
+  if [ $# -gt 0 ]; then
+    input="$*"
+  elif [ ! -t 0 ]; then
+    input="$(cat)"
+  else
+    input="$(_wt_clipboard)" || return 1
+  fi
+
+  if [ -z "$input" ]; then
+    echo "Usage: wt-new <task or message text> (or pipe stdin / copy to clipboard)" >&2
+    return 1
+  fi
+
+  (
+    builtin cd "$WORK_BRAIN_DIR" || return 1
+    agy -p "Ingest the following into tasks.md using the GEMINI.md rules (extract actionable tasks, assign priority, and summarize what was added):
+
+$input"
+  )
+}
+
+wt-work() {
+  local caller_dir="$PWD"
+  local add_dir_args=()
+  if [ "$caller_dir" != "$WORK_BRAIN_DIR" ]; then
+    echo "Attaching workspace: $caller_dir"
+    add_dir_args=(--add-dir "$caller_dir")
+  fi
+
+  (
+    builtin cd "$WORK_BRAIN_DIR" || return 1
+    if [ $# -gt 0 ]; then
+      agy "${add_dir_args[@]}" -i "Let's work on: $*. Match or create the task in tasks.md and follow the Live Troubleshooting & Auto-Note Protocol."
+    else
+      agy "${add_dir_args[@]}"
+    fi
+  )
+}
+
+wt-plan() {
+  (
+    builtin cd "$WORK_BRAIN_DIR" || return 1
+    agy -p "Review tasks.md and give me a prioritized plan for today based on priorities, age, and current context. Highlight any blocked items."
+  )
+}
+
+wt-doc() {
+  local filter=""
+  if [ $# -gt 0 ]; then
+    filter=" Focus on tasks matching: $*."
+  fi
+
+  (
+    builtin cd "$WORK_BRAIN_DIR" || return 1
+    agy -i "Review completed [x] tasks in tasks.md that do not yet have linked documentation in docs/.${filter} Draft or update clean SOPs using the template in docs/README.md, update the index in docs/README.md, and link each doc back into the task's Notes."
+  )
+}
+
 # get current branch in git repo
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
